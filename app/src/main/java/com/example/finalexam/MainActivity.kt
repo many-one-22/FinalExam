@@ -50,6 +50,16 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_order -> {
+                    val intent = Intent(this, OrderActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_mypage -> {
+                    val intent = Intent(this, MypageActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 else -> false
             }
         }

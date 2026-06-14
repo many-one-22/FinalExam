@@ -13,4 +13,8 @@ object CartManager {
     fun getCartItems(): List<Book> {
         return cartItems
     }
+
+    fun removeBook(){
+        cartItems.clear()
+    }
 }

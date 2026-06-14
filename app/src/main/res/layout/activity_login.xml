@@ -12,7 +12,7 @@
         android:id="@+id/iv_login_logo"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/navi_market"
         android:layout_marginBottom="20dp" />
 
     <TextView

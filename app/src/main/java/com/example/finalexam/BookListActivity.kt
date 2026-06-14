@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.finalexam.MypageActivity
 import com.example.finalexam.databinding.ActivityBookListBinding
 
 class BookListActivity : AppCompatActivity() {
@@ -47,16 +48,26 @@ class BookListActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_order -> {
+                    val intent = Intent(this, OrderActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_mypage -> {
+                    val intent = Intent(this, MypageActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 else -> false
             }
         }
 
         // 2. 최소 4개 이상의 더미 데이터 생성 (과제 필수 조건)
         val dummyBooks = listOf(
-            Book(1, "처음 만나는 코틀린", "홍길동", "25,000원", "새싹출판사", R.drawable.ic_launcher_foreground), // ⚠️ 실제 이미지 리소스로 교체 권장
-            Book(2, "안드로이드 미스터리", "이순신", "28,000원", "장군출판사", R.drawable.ic_launcher_foreground),
-            Book(3, "모바일 소프트웨어 공학", "김유신", "30,000원", "대학서림", R.drawable.ic_launcher_foreground),
-            Book(4, "자바 없는 안드로이드 세상", "강감찬", "22,000원", "고려미디어", R.drawable.ic_launcher_foreground)
+            Book(1, "관계 중심의 사고법 쉽게 배우는 알고리즘", "홍길동", "25,000원", "한빛아카데미", R.drawable.books_book1), // ⚠️ 실제 이미지 리소스로 교체 권장
+            Book(2, "난생처음 MySQL", "이순신", "28,000원", "한빛아카데미", R.drawable.books_book2),
+            Book(3, "쉽게 배우는 PHP 웹 프로그래밍", "김유신", "30,000원", "한빛아카데미", R.drawable.books_book3),
+            Book(4, "미라클 HTML5 + CSS3 + 자바스크립트", "강감찬", "22,000원", "한빛아카데미", R.drawable.books_book4)
         )
 
         // 3. RecyclerView 설정 (LinearLayoutManager 사용)

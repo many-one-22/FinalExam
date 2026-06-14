@@ -15,7 +15,7 @@
         android:id="@+id/iv_splash_logo"
         android:layout_width="140dp"
         android:layout_height="140dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/navi_market"
         android:layout_marginBottom="16dp"/>
 
     <TextView

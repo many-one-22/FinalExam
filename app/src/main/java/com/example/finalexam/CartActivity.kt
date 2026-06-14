@@ -2,8 +2,10 @@ package com.example.finalexam
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.finalexam.MypageActivity
 import com.example.finalexam.databinding.ActivityCartBinding
 
 class CartActivity : AppCompatActivity() {
@@ -38,6 +40,16 @@ class CartActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_cart -> true
+                R.id.nav_order -> {
+                    val intent = Intent(this, OrderActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_mypage -> {
+                    val intent = Intent(this, MypageActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 else -> false
             }
         }
@@ -60,13 +72,8 @@ class CartActivity : AppCompatActivity() {
 
         // CartActivity.kt의 onCreate 내부 맨 밑에 추가
         binding.btnGoToOrder.setOnClickListener {
-            if (CartManager.getCartItems().isEmpty()) {
-                android.widget.Toast.makeText(this, "장바구니가 비어있습니다.", android.widget.Toast.LENGTH_SHORT).show()
-            } else {
-                // 주문서 액티비티로 이동 (OrderActivity 생성 후 주석 해제)
-                val intent = Intent(this, OrderActivity::class.java)
-                startActivity(intent)
-            }
+            val intent = Intent(this, OrderActivity::class.java)
+            startActivity(intent)
         }
     }
 }

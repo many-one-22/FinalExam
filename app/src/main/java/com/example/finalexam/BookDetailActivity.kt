@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.example.finalexam.MypageActivity
 import com.example.finalexam.databinding.ActivityBookDetailBinding
 
 class BookDetailActivity : AppCompatActivity() {
@@ -59,6 +60,21 @@ class BookDetailActivity : AppCompatActivity() {
                 }
                 R.id.nav_list -> {
                     finish()
+                    true
+                }
+                R.id.nav_cart -> { // 🌟 추가
+                    val intent = Intent(this, CartActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_order -> {
+                    val intent = Intent(this, OrderActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_mypage -> {
+                    val intent = Intent(this, MypageActivity::class.java)
+                    startActivity(intent)
                     true
                 }
                 else -> false

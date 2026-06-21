@@ -6,5 +6,5 @@ data class Book(
     val author: String,
     val price: String,
     val publisher: String,
-    val imageResId: Int // res/drawable에 넣은 이미지 ID
+    val imageResId: Int
 )

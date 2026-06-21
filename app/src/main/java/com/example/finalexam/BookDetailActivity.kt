@@ -13,42 +13,41 @@ class BookDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityBookDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. 툴바 설정 및 뒤로가기 버튼 활성화 (Ch 14)
+        // 상단 툴바, BookList의 하위 페이지이므로 뒤로가기 버튼을 툴바에 추가
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.tvToolbarTitle.text = getString(R.string.bookmoreview)
 
-        // 2. Intent로 전달받은 데이터 가져오기 (Ch 13 액티비티 컴포넌트)
-        // 안전한 꺼내기를 위해 기본값(Default Value) 설정 및 Null-safety 유의
+        // BookList에서 Intent로 쏴준 책 데이터들 받아오기
+        // 가끔 데이터가 누락이 돼서 앱이 튕기는 것을 방지하기 위해 엘비스 연산자로 방어 코드 작성
         val title = intent.getStringExtra("BOOK_TITLE") ?: "정보 없음"
         val author = intent.getStringExtra("BOOK_AUTHOR") ?: "정보 없음"
         val price = intent.getStringExtra("BOOK_PRICE") ?: "0원"
         val publisher = intent.getStringExtra("BOOK_PUBLISHER") ?: "정보 없음"
         val imageResId = intent.getIntExtra("BOOK_IMAGE", R.drawable.ic_launcher_foreground)
 
-        // 3. 받아온 데이터를 레이아웃 뷰에 적용 (String Template 활용)
+        // 받아온 안전한 데이터들을 화면에 출력
         binding.ivDetailCover.setImageResource(imageResId)
         binding.tvDetailTitle.text = title
         binding.tvDetailAuthor.text = "저자: $author"
         binding.tvDetailPublisher.text = "출판사: $publisher"
         binding.tvDetailPrice.text = price
 
-        // onCreate 맨 아래에 추가
+        // 메인 화면에서 '마지막으로 본 도서'를 띄워주기 위해 SharedPreferences에 책 제목 저장
         val sharedPref = getSharedPreferences("BookMarketPrefs", MODE_PRIVATE)
         with(sharedPref.edit()) {
             putString("LAST_VIEWED_BOOK", title)
-            apply() // 비동기로 안전하게 저장
+            apply()
         }
 
-        // 🌟 [추가] 도서목록 화면이므로 하단바에서 '도서목록' 탭이 선택되어 있도록 설정
+        // 하단 메뉴바 초기 세팅
         binding.bottomNavigation.selectedItemId = R.id.nav_list
 
-        // 🌟 [추가] 도서목록 화면의 하단바 클릭 이벤트
+        // 하단 메뉴바 탭 이동 리스너
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -59,21 +58,26 @@ class BookDetailActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_list -> {
-                    finish()
                     true
                 }
-                R.id.nav_cart -> { // 🌟 추가
-                    val intent = Intent(this, CartActivity::class.java)
+                R.id.nav_cart -> {
+                    val intent = Intent(this, CartActivity::class.java).apply{
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
                     startActivity(intent)
                     true
                 }
                 R.id.nav_order -> {
-                    val intent = Intent(this, OrderActivity::class.java)
+                    val intent = Intent(this, OrderActivity::class.java).apply{
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
                     startActivity(intent)
                     true
                 }
                 R.id.nav_mypage -> {
-                    val intent = Intent(this, MypageActivity::class.java)
+                    val intent = Intent(this, MypageActivity::class.java).apply{
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
                     startActivity(intent)
                     true
                 }
@@ -81,11 +85,10 @@ class BookDetailActivity : AppCompatActivity() {
             }
         }
 
-        // BookDetailActivity.kt의 onCreate 내부 맨 밑에 추가
+        // 장바구니 담기 버튼 이벤트
         binding.btnAddToCart.setOnClickListener {
-            // 현재 화면의 도서 정보로 임시 Book 객체 생성
             val currentBook = Book(
-                id = intent.getIntExtra("BOOK_IMAGE", 0), // 임시 ID 대용
+                id = intent.getIntExtra("BOOK_IMAGE", 0),
                 title = title,
                 author = author,
                 price = price,
@@ -93,15 +96,14 @@ class BookDetailActivity : AppCompatActivity() {
                 imageResId = imageResId
             )
 
-            // 🌟 장바구니 저장소에 추가
+            // CartManager에 저장
             CartManager.addBook(currentBook)
 
-            // Ch 15 대화상자(AlertDialog) 활용하여 안내 (완성도 확보)
+            // AlertDialog로 장바구니로 바로 갈 지 더 구경할 지 확인창을 띄움
             androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("장바구니 담기 완료")
                 .setMessage("${title}이(가) 장바구니에 담겼습니다. 장바구니 화면으로 이동하시겠습니까?")
                 .setPositiveButton("이동") { _, _ ->
-                    // 장바구니 액티비티로 이동 (CartActivity 생성 후 주석 해제)
                     val intent = Intent(this, CartActivity::class.java)
                     startActivity(intent)
                 }
@@ -110,9 +112,15 @@ class BookDetailActivity : AppCompatActivity() {
         }
     }
 
-    // 툴바의 뒤로가기 버튼(Up Button)을 눌렀을 때 현재 액티비티 종료
+    // 툴바 상단에 달아놓은 뒤로가기 버튼 눌렀을 때 실제로 화면 닫히게 연결
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 다른 액티비티 갔다가 뒤로가기로 돌아왔을 때 하단 메뉴바의 상태가 엉뚱한 곳에 가 있는 현상 방지
+        binding.bottomNavigation.selectedItemId = R.id.nav_list
     }
 }

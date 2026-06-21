@@ -11,20 +11,22 @@ import com.example.finalexam.databinding.ActivityOrderBinding
 
 class OrderActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityOrderBinding
+    lateinit var binding: ActivityOrderBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. 툴바 설정 (기본 타이틀 안보이게)
+        // 상단 툴바 설정
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        // 하단 메뉴바 초기 세팅
         binding.bottomNavigation.selectedItemId = R.id.nav_order
 
-        // 2. 바텀 네비게이션 리스너 (주문서 작성 중 타 탭 이동 시 스택 정리)
+        // 하단 메뉴바 탭 이동 리스너
+        // 화면이 무한히 겹쳐서 메모리가 낭비되는 것을 막기 위해 CLEAR_TOP, SINGLE_TOP 플래그 적용
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -42,15 +44,20 @@ class OrderActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_cart -> {
-                    val intent = Intent(this, CartActivity::class.java)
+                    val intent = Intent(this, CartActivity::class.java).apply{
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
                     startActivity(intent)
                     true
                 }
                 R.id.nav_order -> {
+                    // 이미 현재 페이지이므로 아무 작업도 하지 않음
                     true
                 }
                 R.id.nav_mypage -> {
-                    val intent = Intent(this, MypageActivity::class.java)
+                    val intent = Intent(this, MypageActivity::class.java).apply{
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
                     startActivity(intent)
                     true
                 }
@@ -58,49 +65,55 @@ class OrderActivity : AppCompatActivity() {
             }
         }
 
-        // 3. 주문할 도서 목록 RecyclerView 연결 (기존 템플릿 어댑터 그대로 재사용)
+        // CartManager에서 장바구니 데이터를 가져와 recyclerview에 연결
         val orderItems = CartManager.getCartItems()
         binding.rvOrderBooks.layoutManager = LinearLayoutManager(this)
-        binding.rvOrderBooks.adapter = BookAdapter(orderItems) { } // 주문서에서는 클릭 이벤트 불필요하므로 비워둠
 
-        // 4. 주문 확정 버튼 클릭 리스너 (Ch 08, Ch 15 대화상자)
+        // 기존 BookAdapter를 활용하면서 주문서 화면에서는 도서 클릭 이벤트가 불필요하므로 빈 람다식을 매개변수로 전달
+        binding.rvOrderBooks.adapter = BookAdapter(orderItems, onItemClick = {})
+
+        // 주문 확정 버튼 클릭 이벤트
         binding.btnOrderSubmit.setOnClickListener {
-
+            // 사용자가 실수로 입력한 앞뒤 공백 제거
             val name = binding.etOrderName.text.toString().trim()
             val phone = binding.etOrderPhone.text.toString().trim()
             val address = binding.etOrderAddress.text.toString().trim()
+
+            // 장바구니가 비어있는지 예외 처리
             if (CartManager.getCartItems().isEmpty()){
                 Toast.makeText(this, "장바구니가 비어있습니다.", android.widget.Toast.LENGTH_SHORT).show()
             }
-            else{
-                // 입력 검증 (Null-safety 및 공백 체크)
+            else {
+                // 배송지 정보 누락 체크
                 if (name.isEmpty() || phone.isEmpty() || address.isEmpty()) {
                     Toast.makeText(this, "배송지 정보를 모두 입력해 주세요.", Toast.LENGTH_SHORT).show()
                 } else {
-                    // 가산점 항목: 의미 있는 곳에 AlertDialog 다루기 (Ch 15)
+                    // 주문 최종 확정을 묻는 다이얼로그 출력
                     AlertDialog.Builder(this)
                         .setTitle("주문 확정")
                         .setMessage("입력하신 주소로 주문을 최종 확정하시겠습니까?")
                         .setPositiveButton("확정") { _, _ ->
                             Toast.makeText(this, getString(R.string.order_success), Toast.LENGTH_SHORT).show()
 
-                            // 🌟 주문이 완결되었으므로 싱글톤 장바구니 내역을 리셋하는 보너스 구현 기재
-                            // (발표 시 데이터 흐름 제어로 설명하기 아주 좋습니다)
-                            // 임시 저장 공간 초기화를 원할 시 CartManager에 clear 함수를 만들어 호출해도 좋습니다.
-
-                            // 메인 홈 화면으로 한 번에 복귀 및 액티비티 백스택 청소
+                            // 메인 화면으로 돌아가면서 중간에 쌓인 액티비티 스택(장바구니, 주문 등)을 모두 정리
                             val intent = Intent(this, MainActivity::class.java).apply {
                                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                             }
                             startActivity(intent)
 
-                            CartManager.removeBook()
+                            // 주문 완료 시 장바구니 데이터 초기화
+                            CartManager.removeBookAll()
                         }
                         .setNegativeButton("취소", null)
                         .show()
                 }
-
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 다른 액티비티를 돌다가 뒤로가기로 돌아왔을 때 하단 메뉴바의 선택 상태가 꼬이는 현상 방지
+        binding.bottomNavigation.selectedItemId = R.id.nav_order
     }
 }

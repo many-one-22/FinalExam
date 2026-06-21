@@ -14,7 +14,12 @@ object CartManager {
         return cartItems
     }
 
-    fun removeBook(){
+    fun removeBook(book: Book){
+        cartItems.remove(book)
+    }
+
+    // 장바구니에 있는 항목들을 전체 삭제하는 함수
+    fun removeBookAll(){
         cartItems.clear()
     }
 }

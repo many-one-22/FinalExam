@@ -1,7 +1,0 @@
-package com.example.finalexam
-
-import android.app.Activity
-
-class ListActivity : Activity() {
-
-}

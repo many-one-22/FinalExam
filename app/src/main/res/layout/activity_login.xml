@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
     android:gravity="center"
-    android:padding="32dp">
+    android:padding="32dp"
+    android:fitsSystemWindows="true">
 
     <ImageView
         android:id="@+id/iv_login_logo"

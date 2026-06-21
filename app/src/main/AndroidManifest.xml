@@ -27,9 +27,6 @@
             android:name=".BookListActivity"
             android:exported="false" />
         <activity
-            android:name=".ListActivity"
-            android:exported="false" />
-        <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
@@ -41,10 +38,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-        <activity
-            android:name=".StartActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MypageActivity"
             android:exported="false"

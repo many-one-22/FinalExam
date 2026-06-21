@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:text="장바구니"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
@@ -48,8 +48,6 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:menu="@menu/bottom_menu"
-        app:paddingBottomSystemWindowInsets="false"
-        app:paddingTopSystemWindowInsets="false"
         app:labelVisibilityMode="labeled" />
 
 </LinearLayout>

@@ -39,8 +39,6 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:menu="@menu/bottom_menu"
-        app:paddingBottomSystemWindowInsets="false"
-        app:paddingTopSystemWindowInsets="false"
         app:labelVisibilityMode="labeled"/>
 
 </LinearLayout>
